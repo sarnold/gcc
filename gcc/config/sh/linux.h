@@ -43,7 +43,7 @@ along with GCC; see the file COPYING3.  If not see
 
 #define TARGET_ASM_FILE_END file_end_indicate_exec_stack
 
-#define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
+#define GLIBC_DYNAMIC_LINKER SYSTEMLIBS_DIR "ld-linux.so.2"
 
 #undef SUBTARGET_LINK_EMUL_SUFFIX
 #define SUBTARGET_LINK_EMUL_SUFFIX "_linux"
