@@ -23,6 +23,8 @@
 
 #define GLIBC_DYNAMIC_LINKER  SYSTEMLIBS_DIR "ld-linux-aarch64%{mbig-endian:_be}%{mabi=ilp32:_ilp32}.so.1"
 
+#define MUSL_DYNAMIC_LINKER  SYSTEMLIBS_DIR "ld-musl-aarch64.so.1"
+
 #undef  ASAN_CC1_SPEC
 #define ASAN_CC1_SPEC "%{%:sanitize(address):-funwind-tables}"
 
