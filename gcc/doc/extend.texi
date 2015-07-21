@@ -8841,6 +8841,17 @@ option is in effect.  Such calls should only be made in debugging
 situations.
 @end deftypefn
 
+@deftypefn {Built-in Function} {void *} __builtin_argument_pointer (void)
+This function is similar to @code{__builtin_frame_address} with an
+argument of 0, but it returns the address of the incoming arguments to
+the current function rather than the address of its frame.
+
+The exact definition of this address depends upon the processor and the
+calling convention.  Usually some arguments are passed in registers and
+the rest on the stack, and this builtin returns the address of the
+first argument which would be passed on the stack.
+@end deftypefn
+
 @node Vector Extensions
 @section Using Vector Instructions through Built-in Functions
 

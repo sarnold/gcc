@@ -11577,6 +11577,12 @@ ix86_expand_prologue (void)
     {
       int align_bytes = crtl->stack_alignment_needed / BITS_PER_UNIT;
 
+      /* Can't use DRAP if the stack address has been taken.  */
+      if (cfun->argument_pointer_taken)
+	sorry ("%<__builtin_argument_pointer%> not supported with stack"
+	       " realignment.  This may be worked around by adding"
+	       " -maccumulate-outgoing-args.");
+
       /* Only need to push parameter pointer reg if it is caller saved.  */
       if (!call_used_regs[REGNO (crtl->drap_reg)])
 	{
