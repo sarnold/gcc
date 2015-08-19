@@ -13,7 +13,8 @@ foo (void)
   aligned j;
   if (check_int (&j, __alignof__(j)) != j)
     abort ();
-  return __builtin_stack_top ();
+  return (__builtin_argument_pointer ()
+	  - sizeof (int __attribute__ ((mode (__word__)))));
 }
 
 /* { dg-final { scan-assembler "leaq\[ \t\]8\\(%rbp\\), %rax" { target lp64 } } } */

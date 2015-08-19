@@ -10,7 +10,8 @@ extern int main (long argc, char **argv, char **envp);
 void
 _start (void)
 {
-  void *argc_p = __builtin_stack_top ();
+  void *argc_p = (__builtin_argument_pointer ()
+		  - sizeof (int __attribute__ ((mode (__word__)))));
   char **argv = (char **) (argc_p + sizeof (void *));
   long argc = *(long *) argc_p;
   int status;

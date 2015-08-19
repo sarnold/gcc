@@ -7,7 +7,8 @@ __attribute__ ((noinline, noclone))
 void
 foo (void)
 {
-  void **p = __builtin_stack_top ();
+  void **p = (__builtin_argument_pointer ()
+	      - sizeof (int __attribute__ ((mode (__word__)))));
   void *ra = __builtin_return_address (0);
   if (*p != ra)
     link_error ();
