@@ -4835,7 +4835,10 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 	 Note that in C the default argument promotions
 	 will prevent such mismatches.  */
 
-      size = GET_MODE_SIZE (arg->mode);
+      if (lang_hooks.decls.empty_record_p (TREE_TYPE (pval)))
+	size = 0;
+      else
+	size = GET_MODE_SIZE (arg->mode);
       /* Compute how much space the push instruction will push.
 	 On many machines, pushing a byte will advance the stack
 	 pointer by a halfword.  */
@@ -4865,10 +4868,14 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 
       /* This isn't already where we want it on the stack, so put it there.
 	 This can either be done with push or copy insns.  */
-      if (!emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), NULL_RTX,
-		      parm_align, partial, reg, used - size, argblock,
-		      ARGS_SIZE_RTX (arg->locate.offset), reg_parm_stack_space,
-		      ARGS_SIZE_RTX (arg->locate.alignment_pad), true))
+      if (used
+	  && !emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval),
+			      NULL_RTX, parm_align, partial, reg,
+			      used - size, argblock,
+			      ARGS_SIZE_RTX (arg->locate.offset),
+			      reg_parm_stack_space,
+			      ARGS_SIZE_RTX (arg->locate.alignment_pad),
+			      true))
 	sibcall_failure = 1;
 
       /* Unless this is a partially-in-register argument, the argument is now
@@ -4900,10 +4907,16 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 	{
 	  /* PUSH_ROUNDING has no effect on us, because emit_push_insn
 	     for BLKmode is careful to avoid it.  */
+	  bool empty_record
+	    = lang_hooks.decls.empty_record_p (TREE_TYPE (pval));
 	  excess = (arg->locate.size.constant
-		    - int_size_in_bytes (TREE_TYPE (pval))
+		    - (empty_record
+		       ? 0
+		       : int_size_in_bytes (TREE_TYPE (pval)))
 		    + partial);
-	  size_rtx = expand_expr (size_in_bytes (TREE_TYPE (pval)),
+	  size_rtx = expand_expr ((empty_record
+				   ? size_zero_node
+				   : size_in_bytes (TREE_TYPE (pval))),
 				  NULL_RTX, TYPE_MODE (sizetype),
 				  EXPAND_NORMAL);
 	}
@@ -4971,10 +4984,13 @@ store_one_arg (struct arg_data *arg, rtx argblock, int flags,
 	    }
 	}
 
-      emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval), size_rtx,
-		      parm_align, partial, reg, excess, argblock,
-		      ARGS_SIZE_RTX (arg->locate.offset), reg_parm_stack_space,
-		      ARGS_SIZE_RTX (arg->locate.alignment_pad), false);
+      if (!CONST_INT_P (size_rtx) || INTVAL (size_rtx) != 0)
+	emit_push_insn (arg->value, arg->mode, TREE_TYPE (pval),
+			size_rtx, parm_align, partial, reg, excess,
+			argblock, ARGS_SIZE_RTX (arg->locate.offset),
+			reg_parm_stack_space,
+			ARGS_SIZE_RTX (arg->locate.alignment_pad),
+			false);
 
       /* Unless this is a partially-in-register argument, the argument is now
 	 in the stack.
@@ -5051,6 +5067,9 @@ must_pass_in_stack_var_size_or_pad (machine_mode mode, const_tree type)
      to be constructed into the stack)...  */
   if (TREE_ADDRESSABLE (type))
     return true;
+
+  if (lang_hooks.decls.empty_record_p (type))
+    return false;
 
   /* If the padding and mode of the type is such that a copy into
      a register would put it into the wrong part of the register.  */

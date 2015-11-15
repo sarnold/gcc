@@ -7920,6 +7920,9 @@ static int
 classify_argument (machine_mode mode, const_tree type,
 		   enum x86_64_reg_class classes[MAX_CLASSES], int bit_offset)
 {
+  if (type && lang_hooks.decls.empty_record_p (type))
+    return 0;
+
   HOST_WIDE_INT bytes =
     (mode == BLKmode) ? int_size_in_bytes (type) : (int) GET_MODE_SIZE (mode);
   int words = CEIL (bytes + (bit_offset % 64) / 8, UNITS_PER_WORD);
@@ -8371,6 +8374,9 @@ construct_container (machine_mode mode, machine_mode orig_mode,
   static bool issued_sse_ret_error;
   static bool issued_x87_ret_error;
 
+  if (type && lang_hooks.decls.empty_record_p (type))
+    return NULL;
+
   machine_mode tmpmode;
   int bytes =
     (mode == BLKmode) ? int_size_in_bytes (type) : (int) GET_MODE_SIZE (mode);
@@ -8783,6 +8789,9 @@ ix86_function_arg_advance (cumulative_args_t cum_v, machine_mode mode,
   HOST_WIDE_INT bytes, words;
   int nregs;
 
+  if (type && lang_hooks.decls.empty_record_p (type))
+    return;
+
   if (mode == BLKmode)
     bytes = int_size_in_bytes (type);
   else
@@ -9098,6 +9107,9 @@ ix86_function_arg (cumulative_args_t cum_v, machine_mode omode,
   machine_mode mode = omode;
   HOST_WIDE_INT bytes, words;
   rtx arg;
+
+  if (type && lang_hooks.decls.empty_record_p (type))
+    return NULL;
 
   /* All pointer bounds arguments are handled separately here.  */
   if ((type && POINTER_BOUNDS_TYPE_P (type))
@@ -9708,6 +9720,9 @@ ix86_return_in_memory (const_tree type, const_tree fntype ATTRIBUTE_UNUSED)
   if (POINTER_BOUNDS_TYPE_P (type))
     return false;
 
+  if (type && lang_hooks.decls.empty_record_p (type))
+    return false;
+
   if (TARGET_64BIT)
     {
       if (ix86_function_type_abi (fntype) == MS_ABI)
@@ -10266,7 +10281,8 @@ ix86_gimplify_va_arg (tree valist, tree type, gimple_seq *pre_p,
   indirect_p = pass_by_reference (NULL, TYPE_MODE (type), type, false);
   if (indirect_p)
     type = build_pointer_type (type);
-  size = int_size_in_bytes (type);
+  bool empty_record = type && lang_hooks.decls.empty_record_p (type);
+  size = empty_record ? 0 : int_size_in_bytes (type);
   rsize = CEIL (size, UNITS_PER_WORD);
 
   nat_mode = type_natural_mode (type, NULL, false);
