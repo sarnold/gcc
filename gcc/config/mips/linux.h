@@ -21,6 +21,12 @@ along with GCC; see the file COPYING3.  If not see
 #define GNU_USER_LINK_EMULATION64 "elf64%{EB:b}%{EL:l}tsmip"
 #define GNU_USER_LINK_EMULATIONN32 "elf32%{EB:b}%{EL:l}tsmipn32"
 
+#undef MUSL_DYNAMIC_LINKER32
+#define MUSL_DYNAMIC_LINKER32 SYSTEMLIBS_DIR "ld-musl-mips%{EL:el}%{msoft-float:-sf}.so.1"
+#undef MUSL_DYNAMIC_LINKER64
+#define MUSL_DYNAMIC_LINKER64 SYSTEMLIBS_DIR "ld-musl-mips64%{EL:el}%{msoft-float:-sf}.so.1"
+#define MUSL_DYNAMIC_LINKERN32 SYSTEMLIBS_DIR "ld-musl-mipsn32%{EL:el}%{msoft-float:-sf}.so.1"
+
 #define GLIBC_DYNAMIC_LINKER32 \
   "%{mnan=2008:" SYSTEMLIBS_DIR "ld-linux-mipsn8.so.1;:" SYSTEMLIBS_DIR "ld.so.1}"
 #define GLIBC_DYNAMIC_LINKER64 \
@@ -40,4 +46,4 @@ along with GCC; see the file COPYING3.  If not see
 #define BIONIC_DYNAMIC_LINKERN32 "/system/bin/linker32"
 #define GNU_USER_DYNAMIC_LINKERN32 \
   CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKERN32, UCLIBC_DYNAMIC_LINKERN32, \
-                         BIONIC_DYNAMIC_LINKERN32)
+                         BIONIC_DYNAMIC_LINKERN32,  MUSL_DYNAMIC_LINKERN32)

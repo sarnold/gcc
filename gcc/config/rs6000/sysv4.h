@@ -763,15 +763,19 @@ ENDIAN_SELECT(" -mbig", " -mlittle", DEFAULT_ASM_ENDIAN)
 
 #define GLIBC_DYNAMIC_LINKER "/lib/ld.so.1"
 #define UCLIBC_DYNAMIC_LINKER "/lib/ld-uClibc.so.0"
+#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-powerpc.so.1"
+
 #if DEFAULT_LIBC == LIBC_UCLIBC
-#define CHOOSE_DYNAMIC_LINKER(G, U) "%{mglibc:" G ";:" U "}"
+#define CHOOSE_DYNAMIC_LINKER(G, U, M) "%{mglibc:" G ";:%{mmusl:" M ";:" U "}}"
+#elif DEFAULT_LIBC == LIBC_MUSL
+#define CHOOSE_DYNAMIC_LINKER(G, U, M) "%{mglibc:" G ";:%{muclibc:" U ";:" M "}}"
 #elif !defined (DEFAULT_LIBC) || DEFAULT_LIBC == LIBC_GLIBC
-#define CHOOSE_DYNAMIC_LINKER(G, U) "%{muclibc:" U ";:" G "}"
+#define CHOOSE_DYNAMIC_LINKER(G, U, M) "%{muclibc:" U ";:%{mmusl:" M ";:" G "}}"
 #else
 #error "Unsupported DEFAULT_LIBC"
 #endif
 #define GNU_USER_DYNAMIC_LINKER \
-  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER)
+  CHOOSE_DYNAMIC_LINKER (GLIBC_DYNAMIC_LINKER, UCLIBC_DYNAMIC_LINKER, MUSL_DYNAMIC_LINKER)
 
 #define LINK_OS_LINUX_SPEC "-m elf32ppclinux %{!shared: %{!static: \
   %{rdynamic:-export-dynamic} \
