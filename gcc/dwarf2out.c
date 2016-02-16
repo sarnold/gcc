@@ -19671,6 +19671,7 @@ gen_producer_string (void)
       case OPT_fpreprocessed:
       case OPT_fltrans_output_list_:
       case OPT_fresolution_:
+      case OPT_fdebug_prefix_map_:
 	/* Ignore these.  */
 	continue;
       default:
