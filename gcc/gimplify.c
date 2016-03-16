@@ -87,6 +87,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "gimple-low.h"
 #include "cilk.h"
 #include "gomp-constants.h"
+#include "file-map.h"
 
 #include "langhooks-def.h"	/* FIXME: for lhd_set_decl_assembler_name */
 #include "tree-pass.h"		/* FIXME: only for PROP_gimple_any */
@@ -2370,6 +2371,7 @@ gimplify_call_expr (tree *expr_p, gimple_seq *pre_p, bool want_value)
       case BUILT_IN_FILE:
 	{
 	  const char *locfile = LOCATION_FILE (EXPR_LOCATION (*expr_p));
+	  locfile = remap_file_filename (locfile);
 	  *expr_p = build_string_literal (strlen (locfile) + 1, locfile);
 	  return GS_OK;
 	}

@@ -46,6 +46,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "opts.h"
 #include "plugin.h"		/* For PLUGIN_INCLUDE_FILE event.  */
 #include "mkdeps.h"
+#include "file-map.h"
 #include "c-target.h"
 #include "tm.h"			/* For BYTES_BIG_ENDIAN,
 				   DOLLARS_IN_IDENTIFIERS,
@@ -508,6 +509,11 @@ c_common_handle_option (size_t scode, const char *arg, int value,
 
     case OPT_fexec_charset_:
       cpp_opts->narrow_charset = arg;
+      break;
+
+    case OPT_ffile_prefix_map_:
+      if (add_file_prefix_map (arg) < 0)
+        error ("invalid argument %qs to -ffile-prefix-map", arg);
       break;
 
     case OPT_fwide_exec_charset_:
