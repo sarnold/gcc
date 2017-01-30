@@ -24,6 +24,8 @@ along with GCC; see the file COPYING3.  If not see
 /* In cp/objcp-common.c, cp/cp-lang.c and objcp/objcp-lang.c.  */
 
 extern tree cp_get_debug_type (const_tree);
+extern tree cp_get_friends (const_tree, int);
+
 extern tree objcp_tsubst_copy_and_build (tree, tree, tsubst_flags_t,
 					 tree, bool);
 
@@ -130,6 +132,8 @@ extern tree cp_unit_size_without_reusable_padding (tree);
 #define LANG_HOOKS_RECONSTRUCT_COMPLEX_TYPE cp_reconstruct_complex_type
 #undef LANG_HOOKS_GET_DEBUG_TYPE
 #define LANG_HOOKS_GET_DEBUG_TYPE cp_get_debug_type
+#undef LANG_HOOKS_GET_FRIENDS
+#define LANG_HOOKS_GET_FRIENDS cp_get_friends
 #undef LANG_HOOKS_TO_TARGET_CHARSET
 #define LANG_HOOKS_TO_TARGET_CHARSET c_common_to_target_charset
 #undef LANG_HOOKS_GIMPLIFY_EXPR

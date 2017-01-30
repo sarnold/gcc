@@ -422,6 +422,13 @@ hook_constcharptr_int_const_tree_const_tree_null (int, const_tree, const_tree)
   return NULL;
 }
 
+/* Generic hook that takes a const_tree and an int, and returns NULL_TREE.  */
+tree
+hook_tree_const_tree_int_null (const_tree, int)
+{
+  return NULL;
+}
+
 /* Generic hook that takes a const_tree and returns NULL_TREE.  */
 tree
 hook_tree_const_tree_null (const_tree)

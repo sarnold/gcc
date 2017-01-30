@@ -170,6 +170,25 @@ struct lang_hooks_for_types
   /* Returns a tree for the unit size of T excluding tail padding that
      might be used by objects inheriting from T.  */
   tree (*unit_size_without_reusable_padding) (tree);
+
+  /* At DETAIL level 0, returns non-NULL if the named class TYPE has
+     any friends, NULL otherwise.  At higher detail levels, return a
+     tree list with the friends of the named class type.  Each
+     TREE_VALUE contains one friend type or function decl.  For
+     non-template friends, TREE_PURPOSE is NULL.  For template friend
+     declarations, the returned entries depend on the DETAIL level.
+     At level 1, and only at level 1, an entry with NULL TREE_VALUE
+     and non-NULL TREE_PURPOSE will START the returned list to
+     indicate the named class TYPE has at least one template friend.
+     At level 2, each template friend will be in an entry with NULL
+     TREE_VALUE, and with the TEMPLATE_DECL in TREE_PURPOSE.  At level
+     3, instead of a NULL TREE_VALUE, we add one entry for each
+     instantiation or specialization of the template that fits the
+     template friend declaration, as long as there is at least one
+     instantiation or specialization; if there isn't any, an entry
+     with NULL TREE_VALUE is created.  A negative detail level will
+     omit non-template friends from the returned list.  */
+  tree (*get_friends) (const_tree, int);
 };
 
 /* Language hooks related to decls and the symbol table.  */
